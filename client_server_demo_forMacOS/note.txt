@@ -1,0 +1,11 @@
+1. 先執行chmod command line，將執行檔新增owner 的執行權限
+    chmod u+x client server
+
+    檢查權限
+    ls -la
+    > -rwxr--r--@  1 owner  group  6241935 11 28 22:31 client
+    > -rwxr--r--@  1 owner  group  6240917 11 28 22:31 server
+
+2. 開兩個terminal，分別利用 "./server", "./client" 的command line 方式運作程式
+    - 先開啟server，再開啟client
+    - 若遇上"Permission denied"，請確認執行權限是否有設定好

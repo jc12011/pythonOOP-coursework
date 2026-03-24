@@ -1,0 +1,53 @@
+import socket
+from threading import Thread
+import json
+import time
+
+host = "127.0.0.1"
+port = 20001
+
+
+class PureSocketServer(Thread):
+    def __init__(self, host, port):
+        super().__init__()
+        self.__server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__server_socket.bind((host, port))
+        self.__server_socket.listen(5)
+
+    def serve(self):
+        self.start()
+
+    def run(self):
+        while True:
+            connection, address = self.__server_socket.accept()
+            print("{} connected".format(address))
+            self.new_connection(connection=connection,
+                                                  address=address)
+
+    def new_connection(self, connection, address):
+        Thread(target=self.receive_message_from_client,
+               kwargs={
+                   "connection": connection,
+                   "address": address}, daemon=True).start()
+
+    def receive_message_from_client(self, connection, address):
+        keep_going = True
+        while keep_going:
+            try:
+                message = connection.recv(1024).strip().decode()
+            except:
+                keep_going = False
+            else:
+                if not message:
+                    break
+                message = json.loads(message)
+                print(message)
+#                time.sleep(20)
+                connection.send("OK".encode())
+        
+        print("close connection")
+
+
+if __name__ == '__main__':
+    server = PureSocketServer(host, port)
+    server.serve()
